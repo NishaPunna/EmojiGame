@@ -1,0 +1,101 @@
+import {Component} from 'react'
+import './index.css'
+import EmojiCard from '../EmojiCard'
+import NavBar from '../NavBar'
+import WinOrLoseCard from '../WinOrLoseCard'
+class EmojiGame extends Component {
+  state = {
+    score: 0,
+    topScore: 0,
+    clickedEmojiList: [],
+    isGameFinished: false,
+    isWon: false,
+  }
+
+  shuffledEmojisList = () => {
+    const {emojisList} = this.props
+    return emojisList.sort(() => Math.random() - 0.5)
+  }
+
+  onClickEmoji = id => {
+    const {emojisList} = this.props
+    const {clickedEmojiList} = this.state
+
+    if (clickedEmojiList.includes(id)) {
+      this.setState(
+        {isGameFinished: true, isWon: false},
+        this.finishedGameAndSetTopScore,
+      )
+    } else {
+      const newClickedEmojiList = [...clickedEmojiList, id]
+      if (newClickedEmojiList.length === emojisList.length) {
+        this.setState(
+          {
+            score: newClickedEmojiList.length,
+            clickedEmojiList: newClickedEmojiList,
+            isGameFinished: true,
+            isWon: true,
+          },
+          this.finishedGameAndSetTopScore,
+        )
+      } else {
+        this.setState(prevState => ({
+          score: prevState.score + 1,
+          clickedEmojiList: newClickedEmojiList,
+        }))
+      }
+    }
+  }
+
+  finishedGameAndSetTopScore = () => {
+    const {score, topScore} = this.state
+    if (score > topScore) {
+      this.setState({topScore: score})
+    }
+  }
+
+  resetGame = () => {
+    this.setState({
+      score: 0,
+      clickedEmojiList: [],
+      isWon: false,
+      isGameFinished: false,
+    })
+  }
+
+  render() {
+    const {score, topScore, isGameFinished, isWon} = this.state
+    const shuffledEmojisList = this.shuffledEmojisList()
+    return (
+      <div className="bg-container">
+        <NavBar
+          score={score}
+          topScore={topScore}
+          isGameFinished={isGameFinished}
+          isWon={isWon}
+        />
+        {isGameFinished ? (
+          <WinOrLoseCard
+            isWon={isWon}
+            score={score}
+            onClickPlayAgain={this.resetGame}
+          />
+        ) : (
+          <div className="bg-ul-container">
+            <ul className="ul-container">
+              {shuffledEmojisList.map(emoji => (
+                <EmojiCard
+                  key={emoji.id}
+                  emojiDetails={emoji}
+                  onClickEmoji={this.onClickEmoji}
+                />
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    )
+  }
+}
+
+export default EmojiGame
