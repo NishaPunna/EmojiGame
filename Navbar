@@ -1,0 +1,25 @@
+import './index.css'
+
+const NavBar = props => {
+  const {score, topScore, isGameFinished, isWon} = props
+  return (
+    <div className="navbar-container">
+      <div className="nav">
+        <img
+          src="https://assets.ccbp.in/frontend/react-js/game-logo-img.png"
+          className="nav-img"
+          alt="emoji logo"
+        />
+        <h1 className="emoji-text">Emoji Game</h1>
+      </div>
+      <div className="header">
+        {!isGameFinished && <p className="score">Score: {score}</p>}
+        {!isGameFinished && !isWon && (
+          <p className="text-top">Top Score: {topScore}</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default NavBar
